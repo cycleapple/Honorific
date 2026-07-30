@@ -212,7 +212,7 @@ public partial class CustomTitle {
                 if (ConditionParam0 == 0) return false;
                 return playerCharacter.ClassJob.Value.IsRole((ClassJobRole)ConditionParam0);
             case TitleConditionType.GearSet:
-                if (PluginService.Objects.LocalPlayer == null || playerCharacter.EntityId != PluginService.Objects.LocalPlayer.EntityId) return false;
+                if (PluginService.ClientState.LocalPlayer == null || playerCharacter.EntityId != PluginService.ClientState.LocalPlayer.EntityId) return false;
                 var gearSetModule = RaptureGearsetModule.Instance();
                 if (gearSetModule == null) return false;
                 return RaptureGearsetModule.Instance()->CurrentGearsetIndex == ConditionParam0;

@@ -401,7 +401,7 @@ public static class GradientBuilder {
                     ImGui.SetClipboardText(b64);
                 }
                 
-                var eid = PluginService.Objects.LocalPlayer?.EntityId;
+                var eid = PluginService.ClientState.LocalPlayer?.EntityId;
                 if (eid != null) {
                     if (Plugin.IpcAssignedTitles.ContainsKey(eid.Value)) {
                                     

@@ -85,8 +85,8 @@ public class ConfigWindow : Window {
                         }
                     }
 
-                    if (PluginService.PlayerState.ContentId != 0 && ImGui.Selectable($"Identify as '{name} @ {world.Value.Name.ExtractText()}'")) {
-                        config.IdentifyAs[PluginService.PlayerState.ContentId] = (name, world.Value.RowId);
+                    if (PluginService.ClientState.LocalContentId != 0 && ImGui.Selectable($"Identify as '{name} @ {world.Value.Name.ExtractText()}'")) {
+                        config.IdentifyAs[PluginService.ClientState.LocalContentId] = (name, world.Value.RowId);
                     }
                     
                     ImGui.EndPopup();
@@ -137,15 +137,15 @@ public class ConfigWindow : Window {
         {
             if (ImGui.BeginChild("character_select", ImGuiHelpers.ScaledVector2(240, 0) - iconButtonSize with { X = 0 }, true)) {
 
-                var name = PluginService.Objects.LocalPlayer?.Name.TextValue ?? string.Empty;
-                var homeWorld = PluginService.Objects.LocalPlayer?.HomeWorld.RowId ?? 0;
+                var name = PluginService.ClientState.LocalPlayer?.Name.TextValue ?? string.Empty;
+                var homeWorld = PluginService.ClientState.LocalPlayer?.HomeWorld.RowId ?? 0;
                 
-                if (config.IdentifyAs.TryGetValue(PluginService.PlayerState.ContentId, out var identifyAs)) {
+                if (config.IdentifyAs.TryGetValue(PluginService.ClientState.LocalContentId, out var identifyAs)) {
                     var worldName = PluginService.Data.GetExcelSheet<World>().GetRowOrDefault(identifyAs.Item2)?.Name.ExtractText() ?? $"UnknownWorld#{identifyAs.Item2}";
                     ImGui.Text("Current Identity:");
                     ImGui.SameLine();
                     if (ImGui.SmallButton("Reset")) {
-                        config.IdentifyAs.Remove(PluginService.PlayerState.ContentId);
+                        config.IdentifyAs.Remove(PluginService.ClientState.LocalContentId);
                     } else {
                         (name, homeWorld) = identifyAs;
                         ImGui.Text($"\t{name}\n\t\t@ {worldName}");
@@ -160,13 +160,13 @@ public class ConfigWindow : Window {
 
             var charListSize = ImGui.GetItemRectSize().X;
 
-            if (PluginService.Objects.LocalPlayer != null) {
+            if (PluginService.ClientState.LocalPlayer != null) {
                 if (ImGuiComponents.IconButton(FontAwesomeIcon.User)) {
-                    if (PluginService.Objects.LocalPlayer != null) {
-                        var characterName = PluginService.Objects.LocalPlayer.Name.TextValue;
-                        var homeWorld = PluginService.Objects.LocalPlayer.HomeWorld.RowId;
+                    if (PluginService.ClientState.LocalPlayer != null) {
+                        var characterName = PluginService.ClientState.LocalPlayer.Name.TextValue;
+                        var homeWorld = PluginService.ClientState.LocalPlayer.HomeWorld.RowId;
                         
-                        if (config.IdentifyAs.TryGetValue(PluginService.PlayerState.ContentId, out var identifyAs)) {
+                        if (config.IdentifyAs.TryGetValue(PluginService.ClientState.LocalContentId, out var identifyAs)) {
                             (characterName, homeWorld) = identifyAs;
                         }
                         
@@ -213,7 +213,7 @@ public class ConfigWindow : Window {
         ImGui.SameLine();
         if (ImGui.BeginChild("character_view", ImGuiHelpers.ScaledVector2(0), true)) {
             if (selectedCharacter != null) {
-                var activePlayer = PluginService.Objects.FirstOrDefault(t => t is IPlayerCharacter playerCharacter && ((playerCharacter.ObjectIndex == 0 && config.IdentifyAs.TryGetValue(PluginService.PlayerState.ContentId, out var identity)) ? (identity.Item1 == selectedName && identity.Item2 == selectedWorld) : (playerCharacter.Name.TextValue == selectedName && playerCharacter.HomeWorld.RowId == selectedWorld)));
+                var activePlayer = PluginService.Objects.FirstOrDefault(t => t is IPlayerCharacter playerCharacter && ((playerCharacter.ObjectIndex == 0 && config.IdentifyAs.TryGetValue(PluginService.ClientState.LocalContentId, out var identity)) ? (identity.Item1 == selectedName && identity.Item2 == selectedWorld) : (playerCharacter.Name.TextValue == selectedName && playerCharacter.HomeWorld.RowId == selectedWorld)));
 
                 if (activePlayer is IPlayerCharacter player) {
                     var option = UiConfigOption.NamePlateNameTitleTypeOther;
@@ -227,7 +227,7 @@ public class ConfigWindow : Window {
                     } else if (player.StatusFlags.HasFlag(StatusFlags.Friend)) {
                         option = UiConfigOption.NamePlateNameTitleTypeFriend;
                         optionGroupNameId = 7719;
-                    } else if (player == PluginService.Objects.LocalPlayer) {
+                    } else if (player == PluginService.ClientState.LocalPlayer) {
                         option = UiConfigOption.NamePlateNameTitleTypeSelf;
                         optionGroupNameId = 7700;
                     }
@@ -1078,7 +1078,7 @@ public class ConfigWindow : Window {
                                         title.LocationCondition.Plot = title.LocationCondition.ShouldSerializePlot() ? HousingManager.Instance()->GetCurrentPlot() : null;
                                         if (title.LocationCondition.Plot is < 0) title.LocationCondition.Plot = null;
                                         title.LocationCondition.Room = title.LocationCondition.ShouldSerializeRoom() ? HousingManager.Instance()->GetCurrentRoom() : null;
-                                        title.LocationCondition.World = title.LocationCondition.ShouldSerializeWorld() ? PluginService.Objects.LocalPlayer?.CurrentWorld.RowId ?? null : null;
+                                        title.LocationCondition.World = title.LocationCondition.ShouldSerializeWorld() ? PluginService.ClientState.LocalPlayer?.CurrentWorld.RowId ?? null : null;
                                     }
                                 }
                             }

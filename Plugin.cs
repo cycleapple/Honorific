@@ -224,7 +224,7 @@ public unsafe class Plugin : IDalamudPlugin {
         if (splitArgs.Length > 0) {
             switch (splitArgs[0]) {
                 case "title": {
-                    var character = PluginService.Objects.LocalPlayer;
+                    var character = PluginService.ClientState.LocalPlayer;
                     if (character == null) {
                         PluginService.Chat.PrintError($"Unable to use command. Character not found.", Name);
                         return;
@@ -232,7 +232,7 @@ public unsafe class Plugin : IDalamudPlugin {
 
                     var characterName = character.Name.TextValue;
                     var homeWorld = character.HomeWorld.RowId;
-                    if (Config.IdentifyAs.TryGetValue(PluginService.PlayerState.ContentId, out var identifyAs)) {
+                    if (Config.IdentifyAs.TryGetValue(PluginService.ClientState.LocalContentId, out var identifyAs)) {
                         (characterName, homeWorld) = identifyAs;
                     }
 
@@ -308,7 +308,7 @@ public unsafe class Plugin : IDalamudPlugin {
                     return;
                 }
                 case "random": {
-                    var character = PluginService.Objects.LocalPlayer;
+                    var character = PluginService.ClientState.LocalPlayer;
                     if (character == null) {
                         PluginService.Chat.PrintError($"Unable to use command. Character not found.", Name);
                         return;
@@ -316,7 +316,7 @@ public unsafe class Plugin : IDalamudPlugin {
                     
                     var characterName = character.Name.TextValue;
                     var homeWorld = character.HomeWorld.RowId;
-                    if (Config.IdentifyAs.TryGetValue(PluginService.PlayerState.ContentId, out var identifyAs)) {
+                    if (Config.IdentifyAs.TryGetValue(PluginService.ClientState.LocalContentId, out var identifyAs)) {
                         (characterName, homeWorld) = identifyAs;
                     }
                     
@@ -334,7 +334,7 @@ public unsafe class Plugin : IDalamudPlugin {
                     return;
                 }
                 case "force" when splitArgs.Length > 1 && splitArgs[1].ToLower() is "clear": {
-                    var character = PluginService.Objects.LocalPlayer;
+                    var character = PluginService.ClientState.LocalPlayer;
                     if (character == null) {
                         PluginService.Chat.PrintError($"Unable to use set command. Character not found.", Name);
                         return;
@@ -342,7 +342,7 @@ public unsafe class Plugin : IDalamudPlugin {
                     
                     var characterName = character.Name.TextValue;
                     var homeWorld = character.HomeWorld.RowId;
-                    if (Config.IdentifyAs.TryGetValue(PluginService.PlayerState.ContentId, out var identifyAs)) {
+                    if (Config.IdentifyAs.TryGetValue(PluginService.ClientState.LocalContentId, out var identifyAs)) {
                         (characterName, homeWorld) = identifyAs;
                     }
 
@@ -357,7 +357,7 @@ public unsafe class Plugin : IDalamudPlugin {
                 }
                 
                 case "force" when splitArgs.Length > 1 && splitArgs[1].ToLower() is "set": {
-                    var character = PluginService.Objects.LocalPlayer;
+                    var character = PluginService.ClientState.LocalPlayer;
                     if (character == null) {
                         PluginService.Chat.PrintError($"Unable to use set command. Character not found.", Name);
                         return;
@@ -365,7 +365,7 @@ public unsafe class Plugin : IDalamudPlugin {
                     
                     var characterName = character.Name.TextValue;
                     var homeWorld = character.HomeWorld.RowId;
-                    if (Config.IdentifyAs.TryGetValue(PluginService.PlayerState.ContentId, out var identifyAs)) {
+                    if (Config.IdentifyAs.TryGetValue(PluginService.ClientState.LocalContentId, out var identifyAs)) {
                         (characterName, homeWorld) = identifyAs;
                     }
 
@@ -496,7 +496,7 @@ public unsafe class Plugin : IDalamudPlugin {
                     return;
                 }
                 case "identity":
-                    if (PluginService.PlayerState.ContentId == 0 || PluginService.Objects.LocalPlayer == null) return;
+                    if (PluginService.ClientState.LocalContentId == 0 || PluginService.ClientState.LocalPlayer == null) return;
                     if (splitArgs.Length < 2) {
                         HelpIdentity();
                         return;
@@ -504,7 +504,7 @@ public unsafe class Plugin : IDalamudPlugin {
 
                     switch (splitArgs[1]) {
                         case "reset":
-                            Config.IdentifyAs.Remove(PluginService.PlayerState.ContentId);
+                            Config.IdentifyAs.Remove(PluginService.ClientState.LocalContentId);
                             PluginService.PluginInterface.SavePluginConfig(Config);
                             return;
                         case "set":
@@ -520,7 +520,7 @@ public unsafe class Plugin : IDalamudPlugin {
                             var serverName = nameServerSplit.Length > 1 ? nameServerSplit[1] : string.Empty;
                             var serverId = 0U;
                             if (string.IsNullOrWhiteSpace(serverName)) {
-                                serverId = PluginService.Objects.LocalPlayer.HomeWorld.RowId;
+                                serverId = PluginService.ClientState.LocalPlayer.HomeWorld.RowId;
                             } else {
                                 if (!uint.TryParse(serverName, out serverId)) {
 
@@ -539,7 +539,7 @@ public unsafe class Plugin : IDalamudPlugin {
                                 return;
                             }
                             
-                            Config.IdentifyAs[PluginService.PlayerState.ContentId] = (name, serverId);
+                            Config.IdentifyAs[PluginService.ClientState.LocalContentId] = (name, serverId);
                             PluginService.PluginInterface.SavePluginConfig(Config);
                             
                             return;
@@ -706,7 +706,7 @@ public unsafe class Plugin : IDalamudPlugin {
         var playerName = playerCharacter.Name.TextValue;
         var homeWorld = playerCharacter.HomeWorld.RowId;
 
-        if (playerCharacter.ObjectIndex == 0 && Config.IdentifyAs.TryGetValue(PluginService.PlayerState.ContentId, out var identifyAs)) {
+        if (playerCharacter.ObjectIndex == 0 && Config.IdentifyAs.TryGetValue(PluginService.ClientState.LocalContentId, out var identifyAs)) {
             (playerName, homeWorld) = identifyAs;
         }
         
